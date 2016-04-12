@@ -1,0 +1,9 @@
+package org.bankalert
+
+rule "Is from a valid country"
+when
+  $a: Transaction( countryCode == "US" )
+then
+  System.out.println( "Country is = " + $a.getCountryCode() );
+end
+
