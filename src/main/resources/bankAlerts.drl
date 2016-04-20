@@ -1,9 +1,30 @@
 package org.bankalert
+dialect "mvel"
 
-rule "Is from a valid country"
-when
-  $a: Transaction( countryCode == "US" )
-then
-  System.out.println( "Country is = " + $a.getCountryCode() );
+import org.bankalert.Transaction;
+import accumulate org.bankalert.UseCase2DbFunction useCase2DbFunction;
+
+global java.util.List customerIdList;
+global java.util.List countryCodesList;
+
+rule "Rule 1"
+    when
+        $t: Transaction(customerIdList contains customerID || countryCodesList contains countryCode)
+    then
+    	System.out.println("Customer:"+ $t.customerID+" is defaulter in rule 1, txn id:"+$t.txnID);
+    	$t.setIsFraud(true);
+    	$t.getMatchedUseCase().add("1");
 end
 
+rule "Rule 2 Custom Accumulate Function for java method call"
+	when
+        $t: Transaction()
+        $match: Number(intValue > 1) from accumulate(
+              $t1: Transaction() from $t,
+              useCase2DbFunction($t1)
+        )
+	then
+        System.out.println("Customer:"+ $t.customerID+" is defaulter in rule 2, txn id:"+$t.txnID);
+        $t.setIsFraud(true);
+        $t.getMatchedUseCase().add("2");
+end
