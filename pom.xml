@@ -13,7 +13,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spark.version>1.6.0</spark.version>
-        <phoenix.version>4.4.0</phoenix.version>
+        <phoenix.version>4.4.0-HBase-1.1</phoenix.version>
         <nifi.version>0.6.0</nifi.version>
     </properties>
 
@@ -153,12 +153,12 @@
             <artifactId>nifi-spark-receiver</artifactId>
             <version>${nifi.version}</version>
         </dependency>
-        <!-- <dependency> -->
-        <!-- <groupId>org.apache.phoenix</groupId> -->
-        <!-- <artifactId>phoenix-spark</artifactId> -->
-        <!-- <version>${phoenix.version}</version> -->
-        <!-- <scope>provided</scope> -->
-        <!-- </dependency> -->
+        <dependency>
+            <groupId>org.apache.phoenix</groupId>
+            <artifactId>phoenix-spark</artifactId>
+            <version>${phoenix.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
         <dependency>
             <groupId>junit</groupId>

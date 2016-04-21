@@ -44,10 +44,13 @@ public class UseCase2DbFunction implements AccumulateFunction {
 			String DB_USERNAME = App.properties.get("DB_USERNAME");
 			String DB_PASSWORD = App.properties.get("DB_PASSWORD");
 
-			Class.forName("com.mysql.jdbc.Driver");
+//			Class.forName("com.mysql.jdbc.Driver");
+//      ((ContextData) context).conn = DriverManager.getConnection(DB_URL,
+//          DB_USERNAME, DB_PASSWORD);
 
-			((ContextData) context).conn = DriverManager.getConnection(DB_URL,
-					DB_USERNAME, DB_PASSWORD);
+      Class.forName("org.apache.phoenix.jdbc.PhoenixDriver");
+      ((ContextData) context).conn = DriverManager.getConnection("jdbc:phoenix:sandbox.hortonworks.com:2181",
+					"admin", "admin");
 
 		} catch (SQLException se) {
 			se.printStackTrace();

@@ -3,10 +3,7 @@ package org.bankalert;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -57,8 +54,8 @@ public class App {
 //        .get("STREAM_DURATION_SECONDS");
 
     SiteToSiteClientConfig config = new SiteToSiteClient.Builder()
-        .url("http://sandbox.hortonworks.com:9091/nifi")
-        .portName("Data For Spark")
+        .url("http://sandbox.hortonworks.com:9090/nifi")
+        .portName("SparkData")
         .buildConfig();
 
     SparkConf conf = new SparkConf().setAppName("Bank Alerts").setMaster(
@@ -79,6 +76,7 @@ public class App {
 //      }
 //    });
 
+
     JavaDStream text = packetStream.map(new Function() {
       @Override
       public Object call(Object o) throws Exception {
@@ -89,6 +87,35 @@ public class App {
     });
 
     text.print();
+
+    try {
+      Class.forName("org.apache.phoenix.jdbc.PhoenixDriver");
+      System.out.println("Connecting to database...");
+      conn = DriverManager.getConnection("jdbc:phoenix:sandbox.hortonworks.com:2181","admin","admin");
+      System.out.println("Creating statement...");
+      stmt = conn.createStatement();
+      String sql;
+      sql = "SELECT * FROM TRANSACTIONS";
+      ResultSet rs = stmt.executeQuery(sql);
+      while(rs.next()){
+        //Retrieve by column name
+        int txnid  = rs.getInt("txnid");
+        int customerid = rs.getInt("customerid");
+        String first = rs.getString("countrycode");
+        String last = rs.getString("last");
+
+        //Display values
+        System.out.print("ID: " + id);
+        System.out.print(", Age: " + age);
+        System.out.print(", First: " + first);
+        System.out.println(", Last: " + last);
+      }
+    } catch (ClassNotFoundException e) {
+      e.printStackTrace();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
 
 //    String SOURCE_FOLDER_PATH = properties.get("SOURCE_FOLDER_PATH");
 //    JavaDStream<String> inFileStream = ssc
